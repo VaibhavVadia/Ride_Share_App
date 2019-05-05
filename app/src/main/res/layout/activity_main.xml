@@ -5,8 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+   tools:context=".MainActivity">
 
-    tools:context=".MainActivity">
+
+    <com.synnapps.carouselview.CarouselView
+        android:id="@+id/carouselView"
+        android:layout_width="393dp"
+        android:layout_height="219dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        app:fillColor="@color/vpi__background_holo_dark"
+        app:pageColor="@color/colorPrimary"
+        app:autoPlay="true"
+        app:radius="6dp"
+        app:slideInterval="3000"
+        android:layout_marginTop="112dp"/>
+
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -15,11 +30,13 @@
         android:layout_alignParentLeft="true"
 
         android:layout_centerInParent="true"
-        android:layout_marginStart="114dp"
-        android:layout_marginLeft="114dp"
+        android:layout_marginStart="81dp"
+        android:layout_marginLeft="81dp"
         android:layout_marginTop="426dp"
-        android:text="Welcome To Ride Share!"
-        android:textSize="15dp" />
+        android:text="WELCOME TO RIDE SHARE!"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/driver"
@@ -34,6 +51,7 @@
         android:layout_marginLeft="60dp"
         android:layout_marginBottom="183dp"
         android:baselineAligned="false"
+        android:background="@color/com_facebook_blue"
         android:text="Continue as a Driver" />
 
     <Button
@@ -46,6 +64,8 @@
         android:layout_marginRight="60dp"
         android:layout_marginLeft="60dp"
         android:layout_marginBottom="108dp"
+        android:background="@color/cardview_dark_background"
+        android:backgroundTint="@color/com_facebook_button_border_color_focused"
         android:text="Continue as a Rider" />
 
 
