@@ -49,7 +49,7 @@ private CallbackManager mCallBackManager;
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user!=null){
 
-                    Intent intent = new Intent(CustomerLogin.this, Map.class);
+                    Intent intent = new Intent(CustomerLogin.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                     return;
