@@ -56,10 +56,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     private LatLng pickupLocation;
 
+    private Boolean isLoggingOut = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -72,6 +75,8 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isLoggingOut =true;
+                disconnectCustomer();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(CustomerMapActivity.this, MainActivity.class);
                 startActivity(intent);
@@ -173,6 +178,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customersAvailable");
                 GeoFire geoFire = new GeoFire(ref);
@@ -213,13 +219,20 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             // permissions this app might request
         }
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
+    private void disconnectCustomer(){
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customersAvailable");
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(userId);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (!isLoggingOut){
+            disconnectCustomer();
+        }
+
     }
 }

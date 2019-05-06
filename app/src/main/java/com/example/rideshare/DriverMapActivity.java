@@ -51,6 +51,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     FusedLocationProviderClient mFusedLocationClient;
     Marker mCurrLocationMarker;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -102,4 +102,5 @@ public class CustomerSignup extends AppCompatActivity {
         super.onStop();
         mAuth.removeAuthStateListener(fireBaseAuthListener);
     }
+
 }
