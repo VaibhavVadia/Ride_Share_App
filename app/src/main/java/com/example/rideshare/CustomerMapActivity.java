@@ -110,7 +110,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
 
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }
     }
 
