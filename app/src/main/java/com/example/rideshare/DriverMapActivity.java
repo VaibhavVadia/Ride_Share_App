@@ -36,21 +36,24 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class DriverMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
-    LocationRequest mLocationRequest;
-    FusedLocationProviderClient mFusedLocationClient;
+    private Location mLastLocation;
+    private LocationRequest mLocationRequest;
+    private FusedLocationProviderClient mFusedLocationClient;
     Marker mCurrLocationMarker;
-
+    private String customerId ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +63,10 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
+
+        getAssignedCustomer();
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -85,6 +90,61 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             mMap.setMyLocationEnabled(true);
         }
     }
+    private void getAssignedCustomer(){
+        String driverId = FirebaseAuth.getInstance().getUid();
+        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId);
+        assignedCustomerRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if(map.get("Customer ID")!=null){
+                        customerId = map.get("Customer ID").toString();
+                        getAssignedCustomerPickupLocation();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void getAssignedCustomerPickupLocation(){
+        DatabaseReference assignedCustomerPickUpRef = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId);
+        assignedCustomerPickUpRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    List<Object> map = (List<Object>) dataSnapshot.getValue();
+                    double locationLat = 0;
+                    double locationLong = 0;
+                    if (map.get(0) != null) {
+                        locationLat = Double.parseDouble(map.get(0).toString());
+
+                    }
+                    if (map.get(1) != null) {
+                        locationLong = Double.parseDouble(map.get(1).toString());
+
+                    }
+                    LatLng customerLatLang = new LatLng(locationLat,locationLong);
+                    mMap.addMarker(new MarkerOptions().position(customerLatLang).title("Pick Up Location"));
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {
@@ -131,20 +191,40 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                 Location location = locationList.get(locationList.size() - 1);
                 Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 mLastLocation = location;
-                if (mCurrLocationMarker != null) {
-                    mCurrLocationMarker.remove();
-                }
 
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
-                GeoFire geoFire = new GeoFire(ref);
-                geoFire.setLocation(userId,new GeoLocation(location.getLatitude(), location.getLongitude()));
+                DatabaseReference refAvailable = FirebaseDatabase.getInstance().getReference("driversAvailable");
+                DatabaseReference refWorking = FirebaseDatabase.getInstance().getReference("driversWorking");
+                GeoFire geoFireAvailable = new GeoFire(refAvailable);
+                GeoFire geoFireWorking =new GeoFire(refWorking);
+                if (mCurrLocationMarker != null) {
+                    mCurrLocationMarker.remove();
+                }
+                switch (customerId){
+                    case "":
+                        geoFireAvailable.setLocation(userId,new GeoLocation(location.getLatitude(), location.getLongitude()));
+                        geoFireWorking.removeLocation(userId);
+                        break;
+
+                    default:
+                        geoFireWorking.setLocation(userId,new GeoLocation(location.getLatitude(), location.getLongitude()));
+                        geoFireAvailable.removeLocation(userId);
+                        break;
+
+                }
+
+
+
+
             }
         }
     };
+
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
