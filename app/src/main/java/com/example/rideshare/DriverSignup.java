@@ -45,7 +45,7 @@ public class DriverSignup extends AppCompatActivity {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user!=null){
 
-                    Intent intent = new Intent(DriverSignup.this, MainActivity.class);
+                    Intent intent = new Intent(DriverSignup.this, DriverMapActivity.class);
                     startActivity(intent);
                     finish();
                     return;
