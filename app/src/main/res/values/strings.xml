@@ -3,4 +3,5 @@
     <string name="facebook_app_id">596475130841394</string>
     <string name="fb_login_protocol_scheme">fb596475130841394</string>
     <string name="title_activity_driver_map">Map</string>
+    <string name="title_activity_customer_map">Map</string>
 </resources>
