@@ -163,7 +163,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     HashMap map = new HashMap();
                     map.put("Customer ID", customerId);
                     driverRef.updateChildren(map);
-
                     getDriverLocation();
                     mRequest.setText("Looking for Driver Location");
                 }
@@ -200,7 +199,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private DatabaseReference driverLocationRef;
     private ValueEventListener driverLocationRefListner;
     private void getDriverLocation(){
-         driverLocationRef = FirebaseDatabase.getInstance().getReference().child("driversWorking").child(driverFoundId).child("l");
+        driverLocationRef = FirebaseDatabase.getInstance().getReference().child("driversWorking").child(driverFoundId).child("l");
         driverLocationRefListner= driverLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -321,15 +320,15 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                 mAuth = FirebaseAuth.getInstance();
-                 if(mAuth.getCurrentUser()!=null) {
-                     String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                mAuth = FirebaseAuth.getInstance();
+                if(mAuth.getCurrentUser()!=null) {
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
-                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customersAvailable");
-                     GeoFire geoFire = new GeoFire(ref);
-                     geoFire.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()));
-                 }
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customersAvailable");
+                    GeoFire geoFire = new GeoFire(ref);
+                    geoFire.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()));
+                }
             }
         }
     };
@@ -374,13 +373,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         DatabaseReference refAvailable = FirebaseDatabase.getInstance().getReference("customersAvailable");
         DatabaseReference refRequest = FirebaseDatabase.getInstance().getReference("customerRequest");
 
-            GeoFire geoFire = new GeoFire(refAvailable);
+        GeoFire geoFire = new GeoFire(refAvailable);
 
-            geoFire.removeLocation(userId);
+        geoFire.removeLocation(userId);
 
 
-            GeoFire geoFireRequest = new GeoFire(refRequest);
-            geoFireRequest.removeLocation(userId);
+        GeoFire geoFireRequest = new GeoFire(refRequest);
+        geoFireRequest.removeLocation(userId);
 
     }
 
